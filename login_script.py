@@ -128,7 +128,7 @@ async def send_telegram_message(message):
     "appToken": APP_TOKEN,
     "content": formatted_message,
     "summary": "消息摘要",
-    "contentType": 2,
+    "contentType": 3,
     "topicIds": [35758],
     "uids": ["UID_xPLkXcV6JY5dr89lS5extinKVcLY"],
     "url": "https://wxpusher.zjiecode.com",
