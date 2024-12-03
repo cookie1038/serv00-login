@@ -7,9 +7,9 @@ import random
 import requests
 import os
 
-# 从环境变量中获取 Telegram Bot Token 和 Chat ID
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+# 从环境变量中获取 wxpush的appToken
+APP_TOKEN = os.getenv('APP_TOKEN')
+
 
 def format_to_iso(date):
     return date.strftime('%Y-%m-%d %H:%M:%S')
@@ -20,7 +20,7 @@ async def delay_time(ms):
 # 全局浏览器实例
 browser = None
 
-# telegram消息
+# wxpush消息
 message = ""
 
 async def login(username, password, panel):
@@ -123,32 +123,28 @@ async def send_telegram_message(message):
 
     """
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {
-        'chat_id': TELEGRAM_CHAT_ID,
-        'text': formatted_message,
-        'parse_mode': 'Markdown',  # 使用 Markdown 格式
-        'reply_markup': {
-            'inline_keyboard': [
-                [
-                    {
-                        'text': '问题反馈❓',
-                        'url': 'https://t.me/yxjsjl'  # 点击按钮后跳转到问题反馈的链接
-                    }
-                ]
-            ]
-        }
+    url = "https://wxpusher.zjiecode.com/api/send/message"
+    data = {
+    "appToken": APP_TOKEN,
+    "content": formatted_message,
+    "summary": "消息摘要",
+    "contentType": 2,
+    "topicIds": [35758],
+    "uids": ["UID_xPLkXcV6JY5dr89lS5extinKVcLY"],
+    "url": "https://wxpusher.zjiecode.com",
+    "verifyPay": False,
+    "verifyPayType": 0
     }
     headers = {
         'Content-Type': 'application/json'
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=data, headers=headers)
         if response.status_code != 200:
-            print(f"发送消息到Telegram失败: {response.text}")
+            print(f"发送消息到wxpush失败: {response.text}")
     except Exception as e:
-        print(f"发送消息到Telegram时出错: {e}")
+        print(f"发送消息到wxpush时出错: {e}")
 
 if __name__ == '__main__':
     asyncio.run(main())
