@@ -7,9 +7,6 @@ import random
 import requests
 import os
 
-# 从环境变量中获取 企业微信的appToken
-APP_TOKEN = os.getenv('APP_TOKEN')
-
 
 def format_to_iso(date):
     return date.strftime('%Y-%m-%d %H:%M:%S')
