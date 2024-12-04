@@ -113,8 +113,7 @@ async def main():
 
 async def send_telegram_message(message):
     # 使用 Markdown 格式
-    formatted_message = f"""
-🎯 serv00&ct8自动化保号脚本运行报告
+    formatted_message = f"""🎯 serv00&ct8自动化保号脚本运行报告
 
 🕰 *北京时间*: {format_to_iso(datetime.utcnow() + timedelta(hours=8))}
 
@@ -122,8 +121,7 @@ async def send_telegram_message(message):
 
 📝 *任务报告*:
 
-{message}
-    """
+{message}"""
     # 获取个人信息
     try:
         async with aiofiles.open('info.json', mode='r', encoding='utf-8') as f:
