@@ -110,22 +110,6 @@ async def main():
     # 退出时关闭浏览器
     await shutdown_browser()
 
-async def get_token():
-    # 获取个人信息
-    try:
-        async with aiofiles.open('info.json', mode='r', encoding='utf-8') as f:
-            info_json = await f.read()
-        info = json.loads(info_json)
-
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&corpsecret={}'.format(info['CORPID'], info['CORPSECRET'])
-        resp = requests.get(url)
-        ACCESS_TOKEN = resp.json()['access_token']
-        return info['USER'], ACCESS_TOKEN
-
-    except Exception as e:
-        print(f'读取 accounts.json 文件时出错: {e}')
-        return
-
 async def send_telegram_message(message):
     # 使用 Markdown 格式
     formatted_message = f"""🎯 serv00&ct8自动化保号脚本运行报告
@@ -137,10 +121,22 @@ async def send_telegram_message(message):
 📝 *任务报告*:
 
 {message}"""
-    USER, ACCESS_TOKEN = get_token()
+    # 获取个人信息
+    try:
+        async with aiofiles.open('info.json', mode='r', encoding='utf-8') as f:
+            info_json = await f.read()
+        info = json.loads(info_json)
+
+        url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&corpsecret={}'.format(info['CORPID'], info['CORPSECRET'])
+        resp = requests.get(url)
+        ACCESS_TOKEN = resp.json()['access_token']
+
+    except Exception as e:
+        print(f'读取 accounts.json 文件时出错: {e}')
+        return
     url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={}'.format(ACCESS_TOKEN)
     data = {
-        "touser": USER,
+        "touser": info['USER'],
         "msgtype": "text",
         "agentid": 1000004,
         "text": {
