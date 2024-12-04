@@ -105,7 +105,6 @@ async def main():
         delay = random.randint(1000, 8000)
         await delay_time(delay)
 
-    message += f"🔚脚本结束，如有异常点击下方按钮👇"
     await send_telegram_message(message)
     print(f'所有{serviceName}账号登录完成！')
     # 退出时关闭浏览器
@@ -115,7 +114,7 @@ async def main():
 async def send_telegram_message(message):
     # 使用 Markdown 格式
     formatted_message = f"""
-*🎯 serv00&ct8自动化保号脚本运行报告*
+🎯 serv00&ct8自动化保号脚本运行报告
 
 🕰 *北京时间*: {format_to_iso(datetime.utcnow() + timedelta(hours=8))}
 
@@ -124,7 +123,6 @@ async def send_telegram_message(message):
 📝 *任务报告*:
 
 {message}
-
     """
     # 获取个人信息
     try:
