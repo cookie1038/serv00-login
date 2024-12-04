@@ -20,10 +20,13 @@ jobs:
         with:
           python-version: '3.x'  # 设置你希望使用的 Python 版本，建议使用稳定版本
 
-      - name: Create accounts.json from environment variable
-        run: echo "$ACCOUNTS_JSON" > accounts.json
+      - name: Create accounts.json and info.json from environment variable
+        run: | 
+          echo "$ACCOUNTS_JSON" > accounts.json
+          echo "$INFO_JSON" > info.json
         env:
             ACCOUNTS_JSON: ${{ secrets.ACCOUNTS_JSON }}  # 从GitHub Secrets中获取环境变量
+            INFO_JSON: ${{ secrets.INFO_JSON }}  # 从GitHub Secrets中获取环境变量
 
       - name: 安装依赖
         run: |
@@ -33,7 +36,7 @@ jobs:
 
       - name: 运行登录脚本
         env:
-          APP_TOKEN: ${{ secrets.APP_TOKEN }}
           ACCOUNTS_JSON: ${{ secrets.ACCOUNTS_JSON }}
+          INFO_JSON: ${{ secrets.INFO_JSON }}
         run: |
           python login_script.py
