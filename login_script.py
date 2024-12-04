@@ -7,21 +7,24 @@ import random
 import requests
 import os
 
-# 从环境变量中获取 wxpush的appToken
+# 从环境变量中获取 企业微信的appToken
 APP_TOKEN = os.getenv('APP_TOKEN')
 
 
 def format_to_iso(date):
     return date.strftime('%Y-%m-%d %H:%M:%S')
 
+
 async def delay_time(ms):
     await asyncio.sleep(ms / 1000)
+
 
 # 全局浏览器实例
 browser = None
 
-# wxpush消息
+# 企业微信消息
 message = ""
+
 
 async def login(username, password, panel):
     global browser
@@ -65,12 +68,15 @@ async def login(username, password, panel):
     finally:
         if page:
             await page.close()
+
+
 # 显式的浏览器关闭函数
 async def shutdown_browser():
     global browser
     if browser:
         await browser.close()
         browser = None
+
 
 async def main():
     global message
@@ -101,12 +107,13 @@ async def main():
 
         delay = random.randint(1000, 8000)
         await delay_time(delay)
-        
+
     message += f"🔚脚本结束，如有异常点击下方按钮👇"
     await send_telegram_message(message)
     print(f'所有{serviceName}账号登录完成！')
     # 退出时关闭浏览器
     await shutdown_browser()
+
 
 async def send_telegram_message(message):
     # 使用 Markdown 格式
@@ -122,28 +129,35 @@ async def send_telegram_message(message):
 {message}
 
     """
-
-    url = "https://wxpusher.zjiecode.com/api/send/message"
-    data = {
-    "appToken": APP_TOKEN,
-    "content": formatted_message,
-    "summary": "消息摘要",
-    "contentType": 3,
-    "uids": ["UID_xPLkXcV6JY5dr89lS5extinKVcLY"],
-    "url": "https://wxpusher.zjiecode.com",
-    "verifyPay": False,
-    "verifyPayType": 0
-    }
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
+    # 获取个人信息
     try:
-        response = requests.post(url, json=data, headers=headers)
-        if response.status_code != 200:
-            print(f"发送消息到wxpush失败: {response.text}")
+        async with aiofiles.open('info.json', mode='r', encoding='utf-8') as f:
+            info_json = await f.read()
+        info = json.loads(info_json)
     except Exception as e:
-        print(f"发送消息到wxpush时出错: {e}")
+        print(f'读取 info.json 文件时出错: {e}')
+        return
+
+    url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={}'.format(info['ACCESS_TOKEN'])
+    data = {
+        "touser": info['USER'],
+        "msgtype": "text",
+        "agentid": 1000004,
+        "text": {
+            "content": formatted_message
+        },
+        "safe": 0,
+        "enable_id_trans": 0,
+        "enable_duplicate_check": 0,
+        "duplicate_check_interval": 1800
+    }
+    try:
+        response = requests.post(url, json=data)
+        if response.status_code != 200:
+            print(f"发送消息到企业微信失败: {response.text}")
+    except Exception as e:
+        print(f"发送消息到企业微信时出错: {e}")
+
 
 if __name__ == '__main__':
     asyncio.run(main())
